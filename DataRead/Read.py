@@ -13,7 +13,7 @@ print ("Pas eventueel de waarde ser.port aan in het python script")
 
 #Set COM port config
 ser = serial.Serial()
-ser.baudrate = 9600
+ser.baudrate = 	115200
 ser.bytesize=serial.SEVENBITS
 ser.parity=serial.PARITY_EVEN
 ser.stopbits=serial.STOPBITS_ONE
