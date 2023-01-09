@@ -12,10 +12,12 @@ def main():
     device_client = IoTHubDeviceClient.create_from_connection_string(conn_str)
     # Connect the device client.
     device_client.connect()
-    # Send a single message
-    print("Sending message...")
-    device_client.send_message("This is a message that is being sent")
-    print("Message successfully sent!")
+    for i in range(10):
+        print(i)
+        # Send a single message
+        print("Sending message...")
+        device_client.send_message('{"number": 10}')
+        print("Message successfully sent!")
     # finally, disconnect
     device_client.disconnect()
 if __name__ == "__main__":
