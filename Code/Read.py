@@ -78,6 +78,12 @@ while stack_teller < 20:
 
 # print(stack, '\n')
 
+#
+# add de data to an array for sending to IoT hub
+#
+
+
+
 #Close port and show status
 try:
     ser.close()
