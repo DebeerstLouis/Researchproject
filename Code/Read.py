@@ -22,6 +22,18 @@ ser.rtscts=0
 ser.timeout=20
 ser.port="/dev/ttyUSB0"
 
+#
+# variabelen
+#
+
+TotaalVerbruik_DAG = 0
+TotaalVerbruik_Nacht = 0
+TotaalInjectie_DAG = 0
+TotaalINJECTIE_Nacht = 0
+
+HuidigVerbruik_alleFases = 0
+HuidigInjectie_alleFases = 0
+
 #Open COM port
 try:
     ser.open()
@@ -54,27 +66,33 @@ stack_teller=0
 
 while stack_teller < 20:
    if stack[stack_teller][0:11] == "b'1-0:1.8.1":
-    print("daldag     ", stack[stack_teller][12:22])
+    # print("daldag     ", stack[stack_teller][12:22])
+    TotaalVerbruik_DAG = stack[stack_teller][12:22]
    elif stack[stack_teller][0:11] == "b'1-0:1.8.2":
-    print("piekdag    " , stack[stack_teller][12:22])
+    # print("piekdag    " , stack[stack_teller][12:22])
+    TotaalVerbruik_Nacht = stack[stack_teller][12:22]
 # Daltarief, teruggeleverd vermogen 1-0:2.8.1
    elif stack[stack_teller][0:11] == "b'1-0:2.8.1":
-    print("dalterug   ", stack[stack_teller][12:22])
+    # print("dalterug   ", stack[stack_teller][12:22])
+    TotaalInjectie_DAG = stack[stack_teller][12:22]
 # Piek tarief, teruggeleverd vermogen 1-0:2.8.2
    elif stack[stack_teller][0:11] == "b'1-0:2.8.2":
-        print("piekterug  ", stack[stack_teller][12:22])
+        # print("piekterug  ", stack[stack_teller][12:22])
+        TotaalINJECTIE_Nacht = stack[stack_teller][12:22]
 # Huidige stroomafname: 1-0:1.7.0
    elif stack[stack_teller][0:11] == "b'1-0:1.7.0":
-        print("afgenomen vermogen      ", int(float(stack[stack_teller][12:18])*1000), " W")
+        # print("afgenomen vermogen      ", int(float(stack[stack_teller][12:18])*1000), " W")
+        HuidigVerbruik_alleFases = int(float(stack[stack_teller][12:18])*1000)
 # Huidig teruggeleverd vermogen: 1-0:1.7.0
    elif stack[stack_teller][0:11] == "b'1-0:2.7.0":
-        print("teruggeleverd vermogen  ", int(float(stack[stack_teller][12:18])*1000), " W")
-# Gasmeter: 0-1:24.3.0
-   elif stack[stack_teller][0:11] == "b'0-1:24.3.0":
-        print("Gas                     ", int(float(stack[stack_teller+1][1:10])*1000), " dm3")
+        # print("teruggeleverd vermogen  ", int(float(stack[stack_teller][12:18])*1000), " W")
+        HuidigInjectie_alleFases = int(float(stack[stack_teller][12:18])*1000)
    else:
     pass
    stack_teller = stack_teller +1
+
+print(TotaalInjectie_DAG)
+print(TotaalINJECTIE_Nacht)
 
 # print(stack, '\n')
 
