@@ -42,6 +42,7 @@ obiscodes = {
     "0-0:96.1.1": "Meter serial electricity",
     "0-1:96.1.1": "Meter serial gas",
     "0-0:96.14.0": "Current rate (1=day,2=night)",
+    "1-0:1.6.0": "Active energy import of the runnng months",
     "1-0:1.8.1": "Rate 1 (day) - total consumption",
     "1-0:1.8.2": "Rate 2 (night) - total consumption",
     "1-0:2.8.1": "Rate 1 (day) - total production",
@@ -163,8 +164,27 @@ def main():
                                     },
                                     "fields": {
                                         "Timestanmp": data_dict.get("Timestamp"),
+                                        "Switch electricity": data_dict.get("Switch electricity"),
+                                        "Active energy import of the runnng months": data_dict.get("Active energy import of the runnng months"),
                                         "Total consumption day": data_dict.get("Rate 1 (day) - total consumption"),
-                                        "Total consumpion night": data_dict.get("Rate 2 (night) - total consumption")
+                                        "Total consumpion night": data_dict.get("Rate 2 (night) - total consumption"),
+                                        "Total production day": data_dict.get("Rate 1 (day) - total production"),
+                                        "Total production night": data_dict.get("Rate 2 (night) - total production"),
+                                        "current rate": data_dict.get("Current rate (1=day,2=night)"),
+                                        "all phases consumpion": data_dict.get("All phases consumption"),
+                                        "all phases production": data_dict.get("All phases production"),
+                                        "L1 consumption": data_dict.get("L1 consumption"),
+                                        "L2 consumption": data_dict.get("L2 consumption"),
+                                        "L3 consumption": data_dict.get("L3 consumption"),
+                                        "L1 production": data_dict.get("L1 production"),
+                                        "L2 production": data_dict.get("L2 production"),
+                                        "L3 production": data_dict.get("L3 production"),
+                                        "L1 voltage": data_dict.get("L1 voltage"),
+                                        "L2 voltage": data_dict.get("L2 voltage"),
+                                        "L3 voltage": data_dict.get("L3 voltage"),
+                                        "L1 current": data_dict.get("L1 current"),
+                                        "L2 current": data_dict.get("L2 current"),
+                                        "L3 current": data_dict.get("L3 current")
                                     }
                                 },
                                 {
@@ -173,12 +193,13 @@ def main():
                                         "Meter serial": data_dict.get("Meter serial gas")
                                     },
                                     "fields": {
-                                        "switch gas": data_dict.get("Gas consumption")
+                                        "switch gas": data_dict.get("Switch gas"),
+                                        "gas consumption": data_dict.get("Gas consumption")
                                     }
                                 }
                             ]
 
-                            print(result)
+                            # print(result)
                             write_api = client.write_api(write_options=SYNCHRONOUS)
                             write_api.write(bucket, org, result )
                             
