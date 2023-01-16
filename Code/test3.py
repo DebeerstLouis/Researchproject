@@ -12,6 +12,7 @@ import crcmod.predefined
 import re
 from tabulate import tabulate
 import json
+import time
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -21,6 +22,8 @@ org = "mct"
 token = "NsSlXG_EQ4gGQD2sLwSRRmSbZuRZP-J55cy2KR9cwR7WFnFKUEdIh-01H9vYBjIC5ZQiAhXFStTSRXLJtNTHxA=="
 # Store the URL of your InfluxDB instance
 url="http://20.216.191.227:8086"
+
+old_measurements = []
 
 client = influxdb_client.InfluxDBClient(
     url=url,
@@ -127,6 +130,8 @@ def parsetelegramline(p1line):
 
 
 def main():
+    global old_measurements
+    data_dict = {}
     ser = serial.Serial(serialport, 115200, xonxoff=1)
     p1telegram = bytearray()
     while True:
@@ -155,53 +160,75 @@ def main():
                             output.append(r)
                             # print(output)
                             data_dict = {t[0]: t[1] for t in output}
+                            # print(data_dict)
 
-                            result = [
-                                {
-                                    "measurement": "electricity",
-                                    "tags": {
-                                        "Meter serial": data_dict.get("Meter serial electricity")
-                                    },
-                                    "fields": {
-                                        "Timestanmp": data_dict.get("Timestamp"),
-                                        "Switch electricity": data_dict.get("Switch electricity"),
-                                        "Active energy import of the runnng months": data_dict.get("Active energy import of the runnng months"),
-                                        "Total consumption day": data_dict.get("Rate 1 (day) - total consumption"),
-                                        "Total consumpion night": data_dict.get("Rate 2 (night) - total consumption"),
-                                        "Total production day": data_dict.get("Rate 1 (day) - total production"),
-                                        "Total production night": data_dict.get("Rate 2 (night) - total production"),
-                                        "current rate": data_dict.get("Current rate (1=day,2=night)"),
-                                        "all phases consumpion": data_dict.get("All phases consumption"),
-                                        "all phases production": data_dict.get("All phases production"),
-                                        "L1 consumption": data_dict.get("L1 consumption"),
-                                        "L2 consumption": data_dict.get("L2 consumption"),
-                                        "L3 consumption": data_dict.get("L3 consumption"),
-                                        "L1 production": data_dict.get("L1 production"),
-                                        "L2 production": data_dict.get("L2 production"),
-                                        "L3 production": data_dict.get("L3 production"),
-                                        "L1 voltage": data_dict.get("L1 voltage"),
-                                        "L2 voltage": data_dict.get("L2 voltage"),
-                                        "L3 voltage": data_dict.get("L3 voltage"),
-                                        "L1 current": data_dict.get("L1 current"),
-                                        "L2 current": data_dict.get("L2 current"),
-                                        "L3 current": data_dict.get("L3 current")
-                                    }
-                                },
-                                {
-                                    "measurement": "gas",
-                                    "tags": {
-                                        "Meter serial": data_dict.get("Meter serial gas")
-                                    },
-                                    "fields": {
-                                        "switch gas": data_dict.get("Switch gas"),
-                                        "gas consumption": data_dict.get("Gas consumption")
-                                    }
-                                }
-                            ]
+            electricity_fields = [
+                "Timestamp",
+                "Switch electricity",
+                "Active energy import of the runnng months",
+                "Rate 1 (day) - total consumption",
+                "Rate 2 (night) - total consumption",
+                "Rate 1 (day) - total production",
+                "Rate 2 (night) - total production",
+                "Current rate (1=day,2=night)",
+                "all phases consumpion",
+                "all phases production",
+                "L1 consumption",
+                "L2 consumption",
+                "L3 consumption",
+                "L1 production",
+                "L2 production",
+                "L3 production",
+                "L1 voltage",
+                "L2 voltage",
+                "L3 voltage",
+                "L1 current",
+                "L2 current",
+                "L3 current"
+            ]
 
-                            # print(result)
-                            write_api = client.write_api(write_options=SYNCHRONOUS)
-                            write_api.write(bucket, org, result )
+            gas_fields = [
+                "switch gas",
+                "Gas consumption"
+            ]
+
+            measurements = []
+
+            electricity_measurement = {
+                "measurement": "electricity",
+                    "tags": {
+                        "Meter serial": data_dict.get("Meter serial electricity")
+                    },
+                    "fields": {}
+                }
+
+            for key in data_dict.keys():
+                if key in electricity_fields:
+                    electricity_measurement["fields"][key] = data_dict[key]
+
+            measurements.append(electricity_measurement)
+
+            gas_measurement = {
+                "measurement": "gas",
+                "tags": {
+                    "Meter serial": data_dict.get("Meter serial gas")
+                },
+                "fields": {}
+            }
+
+            for key in data_dict.keys():
+                if key in gas_fields:
+                    gas_measurement["fields"][key] = data_dict[key]
+
+            measurements.append(gas_measurement)
+
+            # print(measurements)
+            # controleren van de data als het veranderd is of niet. 
+            if  measurements != old_measurements:              
+                write_api = client.write_api(write_options=SYNCHRONOUS)
+                write_api.write(bucket, org, measurements )
+                old_measurements = measurements
+                print("Data send to influx")
                             
         except KeyboardInterrupt:
             print("Stopping...")
