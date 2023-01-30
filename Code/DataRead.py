@@ -1,27 +1,16 @@
 #!/usr/bin/python3
-
-# This script will read data from serial connected to the digital meter P1 port
-
-# Created by Jens Depuydt
-# https://www.jensd.be
-# https://github.com/jensdepuydt
-
 import serial
-import sys
 import crcmod.predefined
 import re
 from tabulate import tabulate
-import json
-import time
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 
-bucket = "testmeter"
-org = "mct"
-token = "NsSlXG_EQ4gGQD2sLwSRRmSbZuRZP-J55cy2KR9cwR7WFnFKUEdIh-01H9vYBjIC5ZQiAhXFStTSRXLJtNTHxA=="
-# Store the URL of your InfluxDB instance
-url="http://20.216.191.227:8086"
+bucket = "<Bucket name>"
+org = "<organisition>"
+token = "<API token>"
+url="<influxDB url>"
 
 old_measurements = []
 
@@ -171,8 +160,8 @@ def main():
                 "Rate 1 (day) - total production",
                 "Rate 2 (night) - total production",
                 "Current rate (1=day,2=night)",
-                "all phases consumpion",
-                "all phases production",
+                "All phases consumption",
+                "All phases production",
                 "L1 consumption",
                 "L2 consumption",
                 "L3 consumption",
